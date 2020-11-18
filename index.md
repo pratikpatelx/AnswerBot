@@ -19,5 +19,5 @@ To develop the project we are using a three-stage framework approach:
 
 <hr>
 
-![Word Embedding + IDF metrics](https://user-images.githubusercontent.com/33759282/99516905-c8c7ac80-299f-11eb-9901-fb1a4aa4e2b2.png)
+![Word Embedding + IDF metrics](https://user-images.githubusercontent.com/33759282/99522769-1b589700-29a7-11eb-97d2-75707376c478.png)
 
