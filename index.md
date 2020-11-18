@@ -16,3 +16,6 @@ To develop the project we are using a three-stage framework approach:
 
 ## Relevant Question Retrival
 ![PART A RELEVANT QUESTION RETRIVAL 1](https://user-images.githubusercontent.com/33759282/99502649-6d40f300-298e-11eb-91e5-1dbf39a3e4a1.png)
+
+![Word Embedding + IDF metrics](https://user-images.githubusercontent.com/33759282/99516905-c8c7ac80-299f-11eb-9901-fb1a4aa4e2b2.png)
+
