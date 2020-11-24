@@ -1,7 +1,6 @@
 from google.cloud import bigquery
 
 
-
 def query_stackoverflow():
     client = bigquery.Client()
     query_job = client.query(
@@ -27,7 +26,8 @@ def query_stackoverflow():
     results = query_job.result()  # Waits for job to complete.
 
     for row in results:
-        print("{} {} {} {} {} {} {}".format(row.id, row.title, row.files, row.answers, row.favs, row.views, row.score))
+        print("{} {} {} {} {} {} {}".format(row.id, row.title,
+                                            row.files, row.answers, row.favs, row.views, row.score))
 
 
 if __name__ == "__main__":
