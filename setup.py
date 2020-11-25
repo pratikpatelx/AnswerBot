@@ -1,5 +1,7 @@
 import sqlite3
 from sqlite3 import Error
+import xml.etree.ElementTree as ET
+import lxml as etree
 
 
 def create_connection(db_file):
@@ -15,7 +17,9 @@ def create_connection(db_file):
     except Error as e:
         print(e)
 
-    return conn
+
+def close_connection(conn):
+    conn.close()
 
 
 def create_table(conn, create_table_sql):
@@ -31,6 +35,37 @@ def create_table(conn, create_table_sql):
         print(e)
 
 
+def insert_data(conn):
+    # Path should be a relative path from your pc
+    # parser = etree.XMLParser(recover=true)
+    # root = etree.XML('smallP.xml')
+    tree = ET.parse('smallP.xml')
+    root = tree.getroot()
+    curs = conn.cursor()
+    #root = ET.tostring(root, encoding='utf8').decode('utf8')
+    print("root of the posts is ", root)
+    count = 0
+    insert_query = "INSERT INTO {table} ({columns}) VALUES ({values});"
+    for child in root:
+        val = ""
+
+        for i in range(len(child.attrib.values())-1):
+            val = val + "?, "
+
+        print(len(child.attrib.keys()), "--------------",
+              len(child.attrib.values()))
+        val = val + "?"
+        query = insert_query.format(table="posts", columns=', '.join(
+            child.attrib.keys()), values=val)
+
+        curs.execute(query, child.attrib.values())
+
+        conn.commit()
+        count = count + 1
+        if count > 1000:
+            break
+
+
 def main():
     database = "pythonsqlite.db"
 
@@ -40,7 +75,6 @@ def main():
         ParentID INTEGER,
         AcceptedAnswerId INTEGER,
         CreationDate DATETIME,
-        DeletionDate DATETIME,
         Score INTEGER,
         ViewCount INTEGER,
         Body TEXT,
@@ -65,27 +99,14 @@ def main():
     if conn is not None:
         # create projects table
         create_table(conn, sql_create_posts_table)
+
     else:
         print("Error! cannot create the database connection.")
+
+    insert_data(conn)
+
+    close_connection(conn)
 
 
 if __name__ == '__main__':
     main()
-
-# if __name__ == "__main__":
-#     conn = sqlite3.connect('example.db')
-#     c = conn.cursor()
-
-#     # Create table
-#     c.execute('''CREATE TABLE stocks
-#                 (date text, trans text, symbol text, qty real, price real)''')
-
-#     # Insert a row of data
-#     c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
-
-#     # Save (commit) the changes
-#     conn.commit()
-
-#     # We can also close the connection if we are done with it.
-#     # Just be sure any changes have been committed or they will be lost.
-#     conn.close()
