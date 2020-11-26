@@ -132,3 +132,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# testing the effectiveness of my VS code setup with git
+# please ignore/ delete
