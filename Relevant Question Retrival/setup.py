@@ -19,6 +19,11 @@ def create_connection(db_file):
 
 
 def close_connection(conn):
+    """
+    close a database connection to the SQLite database
+    :param conn: Connection object
+    :return:
+    """
     conn.close()
 
 
@@ -37,9 +42,6 @@ def create_table(conn, create_table_sql):
 
 def insert_data(conn, fileName, tab):
     # Path should be a relative path from your pc
-    # parser = etree.XMLParser(recover=true)
-    # root = etree.XML('smallP.xml')
-
     # insert posts
     tree = ET.parse(fileName)
     root = tree.getroot()
@@ -88,11 +90,11 @@ def main():
         Score INTEGER,
         ViewCount INTEGER,
         Body TEXT,
-        OwnerUserId INTEGER,
+        OwnerUserId INTEGER, 
         OwnerDisplayName TEXT,
         LastEditorUserId INTEGER,
         LastEditorDisplayName TEXT,
-        LastEditDate DATETIME,
+        LastEditDate DATETIME,SDSD
         LastActivityDate DATETIME,
         Title TEXT,
         Tags TEXT,
@@ -116,20 +118,18 @@ def main():
     conn = create_connection(database)
 
     if conn is not None:
-        # create projects table
-
         create_table(conn, sql_create_posts_table)
         create_table(conn, sql_create_votes_table)
 
     else:
-        print("Error creating tables for DB")
+        print("..Error creating tables for DB..\n")
 
-    print("Please wait...... BULK inserting data into Table Posts")
+    print("Please wait...... BULK inserting data into Table Posts...\n")
     insert_data(conn, 'Posts.xml', "Posts")
 
-    print("Please wait...... BULK inserting data into Table Votes")
+    print("Please wait...... BULK inserting data into Table Votes..\n")
     insert_data(conn, 'Votes.xml', "Votes")
-    print("DONE data insertion.... Closing DB")
+    print("DONE data insertion.... Closing DB...\n")
 
     close_connection(conn)
 
