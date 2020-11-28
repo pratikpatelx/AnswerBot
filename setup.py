@@ -45,7 +45,7 @@ def insert_data(conn, fileName, tab):
     root = tree.getroot()
     curs = conn.cursor()
     # root = ET.tostring(root, encoding='utf8').decode('utf8')
-    print("root of the posts is ", root)
+    print("Root of the table is at ", root)
     count = 0
     insert_query = "INSERT INTO {table} ({columns}) VALUES ({values});"
     for child in root:
@@ -61,16 +61,19 @@ def insert_data(conn, fileName, tab):
         curs.execute(query, child.attrib.values())
 
         conn.commit()
-        count = count + 1
+        # count = count + 1
+        # if (count > 500000):
+        #     print(count)
+        #     count = 0
 
-        if(count > 1000):
-            break
+        # if(count > 1):
+        #     break
 
     print("\n --------------------------------------------------------------------------------------------")
-    print("Done Inserting ", tab)
+    print("Done Inserting into", tab, "Count: ", count)
     print("\n --------------------------------------------------------------------------------------------\n\n")
-
-    # inserting Votes to the DB
+    del(tree)
+    # inserting data to the DB
 
 
 def main():
@@ -114,25 +117,22 @@ def main():
 
     if conn is not None:
         # create projects table
+
         create_table(conn, sql_create_posts_table)
         create_table(conn, sql_create_votes_table)
 
     else:
         print("Error creating tables for DB")
 
-    print("Please wait......")
-    insert_data(conn, 'smallP.xml', "Posts")
-    print("DONEPOSTS")
-    print("Please wait......")
-    insert_data(conn, 'smallV.xml', "Votes")
-    print("DONEVOTES")
+    print("Please wait...... BULK inserting data into Table Posts")
+    insert_data(conn, 'Posts.xml', "Posts")
+
+    print("Please wait...... BULK inserting data into Table Votes")
+    insert_data(conn, 'Votes.xml', "Votes")
+    print("DONE data insertion.... Closing DB")
 
     close_connection(conn)
 
 
 if __name__ == '__main__':
     main()
-
-
-# testing the effectiveness of my VS code setup with git
-# please ignore/ delete
