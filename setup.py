@@ -66,7 +66,7 @@ def insert_data(conn, fileName, tab):
         #     print(count)
         #     count = 0
 
-        # if(count > 1):
+        # if(count > 10000):
         #     break
 
     print("\n --------------------------------------------------------------------------------------------")
@@ -77,7 +77,7 @@ def insert_data(conn, fileName, tab):
 
 
 def main():
-    database = "pythonsqlite.db"
+    database = "TestDB.db"
 
     sql_create_posts_table = """
     CREATE TABLE IF NOT EXISTS Posts (Id INTEGER PRIMARY KEY,
