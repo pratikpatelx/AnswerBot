@@ -99,7 +99,7 @@ def preprocess_tag(tag):
     """
     return tag.replace('<', ' ').replace('>', ' ').strip().split()
 
-# if __name__ == "__main__":
-#     #text = 'Is      there a way to make     Firefox ignore invalid ssl-certificates?'
-#     text = '<p>A long text........ </p>'
-#     print(preprocess_question(text))
+if __name__ == "__main__":
+    #text = 'Is      there a way to make     Firefox ignore invalid ssl-certificates?'
+    text = '<p>A long text........ </p>'
+    print(preprocess_question(text))
