@@ -10,10 +10,10 @@ def preprocess_question(question):
     param: Question - The Question object to be preprocessed
     return: returns the Question Object
     """
-    question.title = preprocess_title(question.title)
-    # question = preprocess_body(question)
-    question.body = preprocess_body(question.body)
-    question.tag = preprocess_tag(question.tag)
+    # question.title = preprocess_title(question.title)
+    question = preprocess_body(question)
+    # question.body = preprocess_body(question.body)
+    # question.tag = preprocess_tag(question.tag)
     return question
 
 
@@ -99,7 +99,7 @@ def preprocess_tag(tag):
     """
     return tag.replace('<', ' ').replace('>', ' ').strip().split()
 
-# if __name__ == "__main__":
-#     #text = 'Is      there a way to make     Firefox ignore invalid ssl-certificates?'
-#     text = '<p>A long text........ </p>'
-#     print(preprocess_question(text))
+if __name__ == "__main__":
+    #text = 'Is      there a way to make     Firefox ignore invalid ssl-certificates?'
+    text = '<p>A long text........ </p>'
+    print(preprocess_question(text))
