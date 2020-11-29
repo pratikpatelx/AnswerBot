@@ -97,7 +97,7 @@ class IDFModel:
                     mycsv.writerow(row)
                 except Exception as e:
                     print("Error Failed to add data to the csv...\n", e)
-        print("Sucessuflly Wrote Data to the csv at %s..\n " % csv_path)
+        print("Successfully Wrote Data to the csv at %s..\n " % csv_path)
 
     def main(self):
         csv_file = "IDF_Test.csv"
