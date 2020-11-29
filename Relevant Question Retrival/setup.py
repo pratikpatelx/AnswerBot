@@ -1,7 +1,9 @@
 import sqlite3
 from sqlite3 import Error
 import xml.etree.ElementTree as ET
-import lxml as etree
+
+
+# import lxml as etree
 
 
 def create_connection(db_file):
@@ -53,7 +55,7 @@ def insert_data(conn, fileName, tab):
     for child in root:
         val = ""
 
-        for i in range(len(child.attrib.values())-1):
+        for i in range(len(child.attrib.values()) - 1):
             val = val + "?, "
 
         val = val + "?"
@@ -74,7 +76,7 @@ def insert_data(conn, fileName, tab):
     print("\n --------------------------------------------------------------------------------------------")
     print("Done Inserting into", tab, "Count: ", count)
     print("\n --------------------------------------------------------------------------------------------\n\n")
-    del(tree)
+    del (tree)
     # inserting data to the DB
 
 
