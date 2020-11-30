@@ -1,7 +1,8 @@
 import sqlite3
 
-from AnswerBot.utils.tokenize_text import preprocess_question
-
+import sys
+sys.path.append("../")
+import utils.tokenize_text as pe
 
 class Question(object):
     """
@@ -52,7 +53,7 @@ class Corpus(Question):
                 count = count + 1
                 # store the tile, body and tag in our data structure
                 data_object = Question(row[0], row[2], row[1], row[4])
-                data_object = preprocess_question(data_object)
+                data_object = pe.preprocess_question(data_object)
                 dataList.append(data_object)
                 # print(data_object.tag)
                 # print("Body: \n", row[0])

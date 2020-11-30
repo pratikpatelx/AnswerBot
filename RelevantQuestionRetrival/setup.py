@@ -96,7 +96,7 @@ def main():
         OwnerDisplayName TEXT,
         LastEditorUserId INTEGER,
         LastEditorDisplayName TEXT,
-        LastEditDate DATETIME,SDSD
+        LastEditDate DATETIME,
         LastActivityDate DATETIME,
         Title TEXT,
         Tags TEXT,
