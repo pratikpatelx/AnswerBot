@@ -21,8 +21,12 @@ class Word2VecModel:
 
         model.save("word2vec.model")
         # model.wv.save_word2vec_format("w2v_model.bin", binary=True)
+        print(model)
         return model
 
+if __name__ == "__main__":
+    test = Word2VecModel()
+    test.create_model()
 # The parameters:
 # min_count = int - Ignores all words with total absolute frequency lower than this - (2, 100)
 # window = int - The maximum distance between the current and predicted word within a sentence. E.g. window words on the left and window words on the left of our target - (2, 10)
