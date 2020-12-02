@@ -39,27 +39,22 @@ class Corpus(Question):
         get_data() - This method will get the Data required to build the text corpus from the DB
         @return: a List containg the data from the DB
         """
-        sql_query = "SELECT Id, Body, Title, Score, Tags FROM Posts WHERE SCORE>0 AND (Title is NOT NULL);"
+        sql_query = "SELECT Body, Title FROM Posts WHERE SCORE>0 AND (Title is NOT NULL);"
         try:
             # initialize a connection to the DB
-            connection = sqlite3.connect("../TestDB.db")
+            connection = sqlite3.connect("../pythonsqlite.db")
             cur = connection.cursor()
             dataList = []
             cur.execute(sql_query)
             records = cur.fetchall()
             print("Total Rows are: ", len(records))
-            count = 0
             for row in records:
-                count = count + 1
-                # store the tile, body and tag in our data structure
-                data_object = Question(row[0], row[2], row[1], row[4])
-                data_object = pe.preprocess_question(data_object)
-                dataList.append(data_object)
-                # print(data_object.tag)
-                # print("Body: \n", row[0])
-                # print("Title: \n", row[1])
-                # print("Score: \n", row[2])
-                # print("Tags: \n", row[3])
+                strQ = pe.preprocess_title(row[1])
+                strB = pe.preprocess_body(row[0])
+                dataList.append(strQ)
+                dataList.append(strB)
+                
+
                 if len(dataList) % 10000 == 0:
                     print("The Load of Questions is {}....".format(len(dataList)))
             cur.close()
@@ -79,15 +74,19 @@ class Corpus(Question):
         @return:
         @rtype:
         """
-        corpus_file = 'corpus.txt'
-        data_list = self.get_data()
+        corpus_file = 'MainCorpus.txt'
+        data_list = self.get_data()        
         print("Starting to Add Data to the txt file....")
         with open(corpus_file, 'w', encoding="utf-8") as filehandler:
+            count = 0
             for d in data_list:
-                filehandler.write(str(d.title) + " " + str(d.body) + "\n")
+                # d here is a list
+                filehandler.write("%s\n" % d)
         print("Added Data Successfully to the txt file...\n")
 
 
 if __name__ == "__main__":
     test = Corpus()
     test.main()
+
+    

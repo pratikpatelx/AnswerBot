@@ -1,0 +1,17 @@
+IDFVocabulary/__pycache__/__init__.cpython-38.pyc
+IDFVocabulary/__pycache__/build_idf_voc.cpython-38.pyc
+RelevantQuestionRetrival/__pycache__/__init__.cpython-38.pyc
+RelevantQuestionRetrival/__pycache__/build_corpus.cpython-38.pyc
+RelevantQuestionRetrival/__pycache__/RCA.cpython-38.pyc
+RelevantQuestionRetrival/MainCorpus.txt
+utils/__pycache__/tokenize_text.cpython-38.pyc
+Word2VecModel/MainWord2vec.model
+Word2VecModel/MainWord2vec.model.trainables.syn1neg.npy
+Word2VecModel/MainWord2vec.model.wv.vectors.npy
+get-pip.py
+utils/__pycache__/tokenize_text.cpython-38.pyc
+.vscode/settings.json
+AnswerBot/pythonsqlite.db
+pythonsqlite.db
+.vscode/settings.json
+.vscode/settings.json

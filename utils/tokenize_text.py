@@ -1,4 +1,4 @@
-# To install the NLTK Python Library:  pip install --user -U nltk
+
 from nltk.tokenize import word_tokenize
 import re
 
@@ -10,11 +10,8 @@ def preprocess_question(question):
     param: Question - The Question object to be preprocessed
     return: returns the Question Object
     """
-    # question.title = preprocess_title(question.title)
-    question = preprocess_body(question)
-    # question.body = preprocess_body(question.body)
-    # question.tag = preprocess_tag(question.tag)
-    return question
+    quest = preprocess_body(question.body)
+    return quest
 
 
 def preprocess_title(title):
@@ -24,7 +21,6 @@ def preprocess_title(title):
     """
     test_data = title.lower()
     test_data = remove_double_space(test_data.replace('\n', ' '))
-    test_data = tokenize(test_data)
     return test_data
 
 
@@ -53,15 +49,7 @@ def preprocess_body(body_data):
     test_data = clean_pre_tags(test_data)
     test_data = clean_html_tags(test_data)
     test_data = remove_double_space(test_data.replace('\n', ' '))
-    test_data = tokenize(test_data)
-    cv_list = []
-    if test_data:
-        for element in test_data:
-            cv_list.append(element.strip())
-        return cv_list
-    else:
-        return ''
-
+    return test_data
 
 def clean_pre_tags(test_data):
     pre_regex = r'<pre(.*?)><code>([\s\S]*?)</code></pre>'
@@ -100,6 +88,6 @@ def preprocess_tag(tag):
     return tag.replace('<', ' ').replace('>', ' ').strip().split()
 
 if __name__ == "__main__":
-    #text = 'Is      there a way to make     Firefox ignore invalid ssl-certificates?'
+
     text = '<p>A long text........ </p>'
     print(preprocess_question(text))
