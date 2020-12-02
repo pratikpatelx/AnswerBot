@@ -21,3 +21,6 @@ To develop the project we are using a three-stage framework approach:
 
 ![Word Embedding + IDF metrics](https://user-images.githubusercontent.com/33759282/99522769-1b589700-29a7-11eb-97d2-75707376c478.png)
 
+<hr>
+
+![Activity Diagram Of Relevant Question Retrival](https://user-images.githubusercontent.com/33759282/100872412-d2c6d080-34b2-11eb-92fc-4c08ba97e716.jpeg)
