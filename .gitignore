@@ -11,7 +11,7 @@ Word2VecModel/MainWord2vec.model.wv.vectors.npy
 get-pip.py
 utils/__pycache__/tokenize_text.cpython-38.pyc
 .vscode/settings.json
-AnswerBot/pythonsqlite.db
-pythonsqlite.db
+*.AnswerBot/pythonsqlite.db
+*.pythonsqlite.db
 .vscode/settings.json
 .vscode/settings.json
