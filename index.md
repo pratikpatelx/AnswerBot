@@ -24,3 +24,7 @@ To develop the project we are using a three-stage framework approach:
 <hr>
 
 ![Activity Diagram Of Relevant Question Retrival](https://user-images.githubusercontent.com/33759282/100872412-d2c6d080-34b2-11eb-92fc-4c08ba97e716.jpeg)
+
+## Useful Answer Paragraphs Selection
+
+![Useful Answer Paragraphs selection](https://user-images.githubusercontent.com/33759282/102062858-53b48f00-3e06-11eb-8d3f-7c9c645fe88a.png)
