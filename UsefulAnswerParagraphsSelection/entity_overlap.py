@@ -21,3 +21,11 @@ class EntityOverLap(object):
             result = inter_section / len(E_q)
         
         return result
+
+    def get_entities(self, list_of_words):
+        entity_set = self.load_entity_set(list_of_words)
+        entity_list = []
+        for word in list_of_words:
+            if word in entity_set:
+                entity_list.append(word)
+        return entity_list
