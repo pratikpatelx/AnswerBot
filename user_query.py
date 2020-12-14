@@ -157,6 +157,6 @@ relAlgo = rel.RCA()
 if __name__ == "__main__":
     retrieveStopWords("./Word2VecModel/stopWords.txt")
     testQuestions = []
-    testMode = False
+    testMode = True
     begin = AnswerBot("pythonsqlite.db", testQuestions, testMode)
     begin.main()

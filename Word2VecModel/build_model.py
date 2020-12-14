@@ -18,7 +18,7 @@ class Word2VecModel:
         self.cores = multiprocessing.cpu_count()
 
     def loadSentences(self):
-        with open(corpus_file,"r") as corpus:
+        with open(corpus_file,"r",encoding="utf-8") as corpus:
             c = corpus.read()
             f = c.replace("\n", " ")
             data = []
