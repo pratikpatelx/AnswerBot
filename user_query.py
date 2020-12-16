@@ -18,11 +18,15 @@ def create_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
+        print("Connecting to DB...")
         return conn
     except Error as e:
         print(e)
 
-
+class Q_data:
+    def __init__(self, ques, rele):
+        self.Q = ques
+        self.Rel = rele
 
 class AnswerBot:
     def __init__(self, db_name, questions, testMode):
@@ -66,20 +70,20 @@ class AnswerBot:
             if x not in post_ids:
                 post_ids.append(x)
 
-        if len(result) < 5:
+        if len(post_ids) <= 3:
             tokens = test_question.split(' ')
             db_query = ("SELECT Id, Title FROM posts where ")
-
+            print("Searching for similar Q")
             for i in range(len(tokens) - 1):
                 if tokens[i] not in stopWords:
-                    db_query = db_query + ("Title like '%{}%' and ".format(tokens[i]))
+                    db_query = db_query + ("Title like '%{}%' or ".format(tokens[i]))
                 
             if tokens[len(tokens)-1] not in stopWords:
                 db_query = db_query + ("Title like '%{}%'".format(tokens[len(tokens)-1]))
                
             temp_cursor.execute(db_query)
             result = temp_cursor.fetchall()
-
+            print(len(result))
             for x in result:
                 if x not in post_ids:
                     post_ids.append(x)
@@ -113,16 +117,24 @@ class AnswerBot:
             query_list = self.preprocess(query_list)
             tokens = nltk.word_tokenize(query_list[0])
             processed_Q = {}
+            answers = []
             for Q in questions:
                 Q_list = nltk.sent_tokenize(Q[1])
                 Q_list = self.preprocess(Q_list)
                 sentence_tokens = nltk.word_tokenize(Q_list[0])
                 temp_rel = relAlgo.calc_symmetric_relevance(tokens, sentence_tokens)
                 processed_Q[Q[0]] = [Q[1], temp_rel]
-                print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
-           
+                answers.append(Q_data(Q[1], temp_rel))
+                #print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
+
+            answers.sort(key=lambda x: x.Rel, reverse=True)
+            for i in range(len(answers)):
+                if i <= 10:
+                    print("Relevance: [{:.3f}] Q: {}".format(answers[i].Rel,answers[i].Q))
+                else:
+                    break
             end_time = time.time() - st_time
-            print("Took {} seconds for Query: \"{}\"".format(end_time, query))
+            print("\nTook {:.2f} seconds for Query: \"{}\"".format(end_time, query))
 
         self.db_conn.close()
 
@@ -156,7 +168,7 @@ stopWords = []
 relAlgo = rel.RCA() 
 if __name__ == "__main__":
     retrieveStopWords("./Word2VecModel/stopWords.txt")
-    testQuestions = []
+    testQuestions = ["What and where are the stack and heap?"]
     testMode = True
     begin = AnswerBot("pythonsqlite.db", testQuestions, testMode)
     begin.main()

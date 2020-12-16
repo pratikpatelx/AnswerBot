@@ -17,7 +17,7 @@ class RCA:
         @return: the IDF vocabulary of metrics
         """
         idf_metric_dict = {}
-        with open("IDFVocabulary/IDF_Test.csv", encoding="utf8") as csvfile:
+        with open("IDFVocabulary/IDF_Test.csv") as csvfile:
             readCSV = csv.reader(csvfile, delimiter = ',')
             print("Loading IDF metrics....")
             for row in readCSV:
@@ -71,7 +71,7 @@ class RCA:
                 
             except:
                 idf = 0
-
+            total_rel.append(0);
             max_rel = max(total_rel)
             rel_idf_summation.append(max_rel * idf)
             idf_values.append(idf)
