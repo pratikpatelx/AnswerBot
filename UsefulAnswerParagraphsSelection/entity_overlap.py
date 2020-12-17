@@ -13,7 +13,7 @@ class EntityOverLap(object):
         return entity_q
 
     def calc_entity(self, E_q, E_a_q):
-        inter_section = len(E_q & E_a_q)
+        inter_section = len(E_q and E_a_q)
 
         if len(E_q) == 0:
             result = 0
@@ -23,7 +23,7 @@ class EntityOverLap(object):
         return result
 
     def get_entities(self, list_of_words):
-        entity_set = self.load_entity_set(list_of_words)
+        entity_set = self.load_entity_set()
         entity_list = []
         for word in list_of_words:
             if word in entity_set:
