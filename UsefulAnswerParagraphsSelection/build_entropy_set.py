@@ -35,39 +35,38 @@ class EntropyHandler(object):
             conn.close()
         return dataList
 
-    def tokenize_data(self, test_arr):
-        stop_words = set(stopwords.words('english'))  
+    def calculate_IDF(self, test_arr):
+        # stop_words = set(stopwords.words('english'))
+        N = len(test_arr)  
         ps = PorterStemmer()
-        total_num = len(test_arr)
-        voc = {}
+        word_freq = {}
         count = 0  
         for test in test_arr:
+            test = test.lower()
             clean = re.compile(r'<[^>]+>')
-            result = re.sub(clean, '', test).strip("\n")
+            test = re.sub(r'\W',' ',test)
+            test = re.sub(r'\s+',' ',test)
+            result = re.sub(clean, '', test)
             tokens = word_tokenize(result)
-            cur_word_set = set()
             words = [word for word in tokens if word.isalpha()]
-            for w in words:
-                w = w.lower()
-                w = ps.stem(w)
-                if w not in cur_word_set:
-                    cur_word_set.add(w)
-                    if w not in voc.keys():
-                        voc[w] = 1.0
-                    else:
-                        voc[w] = voc[w] + 1.0
+            for token in words:
+                token = ps.stem(token)
+                if token not in word_freq.keys():
+                    word_freq[token] = 1
+                else:
+                    word_freq[token] += 1
             count += 1
             if count == 1000:
                 print('processing %s unit...' % count)
                 break
-        for key in voc.keys():
-            idf = math.log(total_num / (voc[key] + 1.0))
-            voc[key] = idf
-            sorted_voc = sorted(voc.items())
-        output = open("entropy_idf.txt", 'w', encoding="utf-8")
-        data = str(sorted_voc)
-        output.write(data)
-        return sorted_voc
+        for key, value in word_freq.items():
+            word_freq[key] = math.log(N / float(value))
+        print("{0:20} {1:20}".format("Word", "IDF VALUE"))
+        for key, value in word_freq.items():
+            print("{0:20} {1:20}".format(key, value))
+        return word_freq
+
+        
 
 
     def read_entropy_voc(self):
@@ -82,12 +81,5 @@ class EntropyHandler(object):
 
 if __name__ == '__main__':
     test = EntropyHandler()
-    temp = test.get_questions_data()
-    x = test.tokenize_data(temp)
-    # reponum = 50000
-    # voc_str = ''
-    # voc = test.read_entropy_voc()
-    # for key in voc.keys():
-    #     voc_str += (key + '   ' + str(voc[key]) + '\n')
-    # test.write_to_file(path, voc_str.strip())
-    # print('Done.')
+    temp = ["It is going to rain today", "Today I am not going outside.", "I am going to watch the season premiere."]
+    x = test.calculate_IDF(temp)
