@@ -66,9 +66,19 @@ class EntropyHandler(object):
             print("{0:20} {1:20}".format(key, value))
         return word_freq
 
+    def calculate_entropy(self, idf_dict):
+        idf_list = []
+        total_entropy = 0
+        for val in idf_list:
+            try:
+                idf_val = idf_dict[val]
+            except:
+                idf_val = 0
+
+            idf_list.append(idf_val)
         
-
-
+        total_entropy = sum(idf_list)
+        
     def read_entropy_voc(self):
         the_file = open(path)
         idf_voc = {}
