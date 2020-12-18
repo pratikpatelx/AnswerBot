@@ -101,7 +101,7 @@ class IDFModel:
         @csv_path : the path to where the CSV file will be created
         @header: The headings in the CSV file
         """
-        with open(csv_path, 'w', encoding="utf-8") as filehandler:
+        with open(csv_path, 'w', encoding="utf8", newline ='') as filehandler:
             mycsv = csv.writer(filehandler)
             mycsv.writerow(header)
             for row in the_list:

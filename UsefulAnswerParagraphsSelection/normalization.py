@@ -143,7 +143,8 @@ if __name__ == "__main__":
     res = []
     top_relevant_paragraph_num = 10
     for query, top_dq_id_and_sim in temp.load_qs_result(rq_res_fpath):
-        top_ss = temp.set_up_entity(query, top_relevant_paragraph_num, top_dq_id_and_sim)
+        print(top_dq_id_and_sim)
+        # top_ss = temp.set_up_entity(query, top_relevant_paragraph_num, top_dq_id_and_sim)
         for i in range(10):
             print("#%s\nsent: %s\n\n" % (i, top_ss[i]))
         res.append([query, top_ss])

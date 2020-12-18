@@ -20,7 +20,7 @@ def create_connection(db_file):
         conn = sqlite3.connect(db_file)
         print("Connecting to DB...")
         return conn
-    except Error as e:
+    except Exception as e:
         print(e)
 
 class Q_data:
@@ -125,7 +125,7 @@ class AnswerBot:
                 temp_rel = relAlgo.calc_symmetric_relevance(tokens, sentence_tokens)
                 processed_Q[Q[0]] = [Q[1], temp_rel]
                 answers.append(Q_data(Q[1], temp_rel))
-                #print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
+                print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
 
             answers.sort(key=lambda x: x.Rel, reverse=True)
             for i in range(len(answers)):
@@ -168,7 +168,7 @@ stopWords = []
 relAlgo = rel.RCA() 
 if __name__ == "__main__":
     retrieveStopWords("./Word2VecModel/stopWords.txt")
-    testQuestions = ["What and where are the stack and heap?"]
+    testQuestions = ["Differences between HashMap and Hashtable?"]
     testMode = True
     begin = AnswerBot("pythonsqlite.db", testQuestions, testMode)
     begin.main()
