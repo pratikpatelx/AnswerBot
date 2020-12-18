@@ -65,22 +65,20 @@ class AnswerBot:
                 
         temp_cursor.execute(db_query)
         result = temp_cursor.fetchall()
-        
         for x in result:
             if x not in post_ids:
                 post_ids.append(x)
 
         if len(post_ids) <= 3:
             tokens = test_question.split(' ')
-            db_query = ("SELECT Id, Title FROM posts where ")
-            print("Searching for similar Q")
+            db_query = ("SELECT Id, Title FROM Posts where ")
             for i in range(len(tokens) - 1):
                 if tokens[i] not in stopWords:
                     db_query = db_query + ("Title like '%{}%' or ".format(tokens[i]))
                 
             if tokens[len(tokens)-1] not in stopWords:
                 db_query = db_query + ("Title like '%{}%'".format(tokens[len(tokens)-1]))
-               
+            
             temp_cursor.execute(db_query)
             result = temp_cursor.fetchall()
             print(len(result))
@@ -125,7 +123,7 @@ class AnswerBot:
                 temp_rel = relAlgo.calc_symmetric_relevance(tokens, sentence_tokens)
                 processed_Q[Q[0]] = [Q[1], temp_rel]
                 answers.append(Q_data(Q[1], temp_rel))
-                #print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
+                print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
 
             answers.sort(key=lambda x: x.Rel, reverse=True)
             for i in range(len(answers)):

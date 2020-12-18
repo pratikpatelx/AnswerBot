@@ -26,7 +26,8 @@ class Normalize(object):
         try:
             for (q_id, sim) in test_str:
                 corr_answer = []
-                query = "SELECT * FROM Posts WHERE Body IS NOT NULL AND PostTypeId = 2 AND ParentID = " +str(q_id)
+                query = "SELECT Id, Title FROM Posts WHERE Body IS NOT NULL AND WHERE Title like
+                 PostTypeId = 2 AND ParentID = " +str(q_id)
                 #print(query)
                 curr.execute(query)
                 results = curr.fetchall()
