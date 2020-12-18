@@ -1,13 +1,15 @@
 # # program to request user query
 # user_query.py : This file gets the querys from the DB dynamically based on user input
-# and displays the results 
+# and displays the results
 # Authors: Pratik Patel, Swetul Patel
 # Created on: 12/2/2020
 import sqlite3
 import time
-import RelevantQuestionRetrival.RCA as rel 
+import RelevantQuestionRetrival.RCA as rel
+import UsefulAnswerParagraphsSelection.normalization as Normalize
 import nltk
 import re
+
 
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -23,10 +25,14 @@ def create_connection(db_file):
     except Exception as e:
         print(e)
 
+
 class Q_data:
-    def __init__(self, ques, rele):
+    def __init__(self, ques, rele, id):
         self.Q = ques
         self.Rel = rele
+        self.Id = id
+        self.ans = ""
+
 
 class AnswerBot:
     def __init__(self, db_name, questions, testMode):
@@ -61,8 +67,9 @@ class AnswerBot:
         for i in range(len(tokens) - 1):
             db_query = db_query + ("Title like '%{}%' and ".format(tokens[i]))
 
-        db_query = db_query + ("Title like '%{}%'".format(tokens[len(tokens)-1]))
-                
+        db_query = db_query + \
+            ("Title like '%{}%'".format(tokens[len(tokens)-1]))
+
         temp_cursor.execute(db_query)
         result = temp_cursor.fetchall()
         for x in result:
@@ -74,18 +81,20 @@ class AnswerBot:
             db_query = ("SELECT Id, Title FROM Posts where ")
             for i in range(len(tokens) - 1):
                 if tokens[i] not in stopWords:
-                    db_query = db_query + ("Title like '%{}%' or ".format(tokens[i]))
-                
+                    db_query = db_query + \
+                        ("Title like '%{}%' or ".format(tokens[i]))
+
             if tokens[len(tokens)-1] not in stopWords:
-                db_query = db_query + ("Title like '%{}%'".format(tokens[len(tokens)-1]))
-            
+                db_query = db_query + \
+                    ("Title like '%{}%'".format(tokens[len(tokens)-1]))
+
             temp_cursor.execute(db_query)
             result = temp_cursor.fetchall()
             print(len(result))
             for x in result:
                 if x not in post_ids:
                     post_ids.append(x)
-        print("---------end---------")    
+        print("---------end---------")
         print("Similar Question Count : {}".format(len(post_ids)))
 
         return post_ids
@@ -116,26 +125,48 @@ class AnswerBot:
             tokens = nltk.word_tokenize(query_list[0])
             processed_Q = {}
             answers = []
+
             for Q in questions:
                 Q_list = nltk.sent_tokenize(Q[1])
                 Q_list = self.preprocess(Q_list)
                 sentence_tokens = nltk.word_tokenize(Q_list[0])
-                temp_rel = relAlgo.calc_symmetric_relevance(tokens, sentence_tokens)
+                temp_rel = relAlgo.calc_symmetric_relevance(
+                    tokens, sentence_tokens)
                 processed_Q[Q[0]] = [Q[1], temp_rel]
-                answers.append(Q_data(Q[1], temp_rel))
-                print("Relevance: [{}] Q: [{}]".format(temp_rel,Q[1]))
+                answers.append(Q_data(Q[1], temp_rel, Q[0]))
+                #print("Relevance: [{}] Q: [{}]".format(temp_rel, Q[1]))
 
             answers.sort(key=lambda x: x.Rel, reverse=True)
+            top_10 = []
+            ans_cursor = self.db_conn.cursor()
             for i in range(len(answers)):
-                if i <= 10:
-                    print("Relevance: [{:.3f}] Q: {}".format(answers[i].Rel,answers[i].Q))
+                if i <= 1:
+                    db_query = 'SELECT AcceptedAnswerId FROM posts Where Id = {}'.format(
+                        answers[i].Id)
+                    ans_cursor.execute(db_query)
+                    result = ans_cursor.fetchall()
+                    print(result[0][0])
+                    print("--------===========--------------------==============----------")
+                    db_query = 'SELECT Body FROM posts Where Id = {}'.format(
+                        result[0][0])
+                    ans_cursor.execute(db_query)
+                    result = ans_cursor.fetchall()
+                    print(result[0][0])
+                    print("*******************************************************************")
+                    answers[i].ans = result[0][0]
+                    top_10.append(answers[i])
+                    #print("Relevance: [{:.3f}] Q: {}".format(answers[i].Rel, answers[i].Q))
                 else:
                     break
+            
+            feature_scores = Normalize.Normalize()
+            feature_scores.main(top_10)
+
             end_time = time.time() - st_time
-            print("\nTook {:.2f} seconds for Query: \"{}\"".format(end_time, query))
+            print("\nTook {:.2f} seconds for Query: \"{}\"".format(
+                end_time, query))
 
         self.db_conn.close()
-
 
     def preprocess(self, item):
         """
@@ -146,27 +177,28 @@ class AnswerBot:
         """
         for i in range(len(item)):
             item[i] = item[i].lower()
-            item[i] = re.sub(r'\W',' ',item[i])
-            item[i] = re.sub(r'\s+',' ',item[i])
-        
+            item[i] = re.sub(r'\W', ' ', item[i])
+            item[i] = re.sub(r'\s+', ' ', item[i])
+
         return item
 
 
 def retrieveStopWords(filename):
-        """
-        retrieveStopWords: this method gets the stop words file "stopWords.txt" from the 
-                            project directory
-        """
-        file = open(filename, "r")
-        for line in file:
-            stopWords.append(line.strip())
+    """
+    retrieveStopWords: this method gets the stop words file "stopWords.txt" from the 
+                        project directory
+    """
+    file = open(filename, "r")
+    for line in file:
+        stopWords.append(line.strip())
+
 
 # FOR TESTING PURPOSES
 stopWords = []
-relAlgo = rel.RCA() 
+relAlgo = rel.RCA()
 if __name__ == "__main__":
     retrieveStopWords("./Word2VecModel/stopWords.txt")
-    testQuestions = ["Differences between HashMap and Hashtable?"]
+    testQuestions = ["What does the yield keyword do?"]
     testMode = True
     begin = AnswerBot("pythonsqlite.db", testQuestions, testMode)
     begin.main()
