@@ -7,13 +7,13 @@ class PatternHandler(object):
     def get_semantic_pattern_value(self, ans_text):
         """
         get_semantic_pattern_value: This method calculates the semantic pattern values of sentences,
-        if an answer paragraph contains alteast one of the semantic pattern we set the value to 0
-        otherwise 1
+        if an answer paragraph contains alteast one of the semantic pattern we set the value to 1
+        otherwise 0
         """
         Patterns = ['please check', 'pls check', 'you should', 'you can try', 'you could try', 'check out',
                'in short', 'the most important is', 'I d recommend', 'in summary', 'keep in mind that',
                'i suggest that']
-        pattern_value = 0
+        pattern_value = 0.0001
 
         for pattern in Patterns:
             if pattern in ans_text.lower():
@@ -26,7 +26,7 @@ class PatternHandler(object):
         used to emphasize the salient information in an answer paragraph. if an answer
         paragraph contains such HTML tags we set its format pattern score at 1 otherwise 0 
         """
-        html_value = 0
+        html_value = 0.0001
 
         HTML_Tag_bold = ['<strong>', '<code>']
         HTML_Tag_strike = ['<strike>']

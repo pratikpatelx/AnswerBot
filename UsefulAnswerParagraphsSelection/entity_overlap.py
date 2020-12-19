@@ -29,3 +29,12 @@ class EntityOverLap(object):
             if word in entity_set:
                 entity_list.append(word)
         return entity_list
+    
+if __name__ == '__main__':
+    tag = "<java><backwards-compatibility><xstream>"
+    question = "Is Java “pass-by-reference” or “pass-by-value”?"
+    test = EntityOverLap()
+    x = test.calc_entity(tag, question)
+    print(x)
+        
+        

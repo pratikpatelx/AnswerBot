@@ -6,17 +6,21 @@ from UsefulAnswerParagraphsSelection.entity_overlap import EntityOverLap
 from UsefulAnswerParagraphsSelection.patterns import PatternHandler
 from UsefulAnswerParagraphsSelection.position import PositionHandler
 from RelevantQuestionRetrival.RCA import RCA
+from sklearn import preprocessing
 import sqlite3
 
 class answer(object):
-    def __init__(self, an):
+    def __init__(self, an,tag, sc, rel, Id):
+        self.ansId = Id
         self.ans = an
-        self.relevance_score = 0
+        self.tags = tag
+        self.score = sc
+        self.relevance_score = rel
         self.entity_score = 0
         self.entropy_score = 0
         self.semantic_pattern = 0
         self.format_pattern = 0
-        self.para_pos_score = 0
+        self.votes_score = 0
         self.overall_score = 0
 
 class Normalize(object):
@@ -24,57 +28,104 @@ class Normalize(object):
     def __init__(self):
         self.top_10 = []
         self.entropy = EntropyHandler()
-        # entity = EntityOverLap()
-        # pattern = PatternHandler()
-        # position = PositionHandler()
+        self.entity = EntityOverLap()
+        self.pattern = PatternHandler()
+        self.position = PositionHandler()
 
     def calculate_entropy_val(self):
         
-        entropy_max = 0
-        entropy_min = 0
-
         scores = []
         for i in range(len(self.top_10)):
             idf_dict = self.entropy.calculate_IDF(self.top_10[i].ans)
-            scores.append(self.entropy.calculate_entropy(idf_dict, self.top_10[i].ans))
+            new_ans, entropy = (self.entropy.calculate_entropy(idf_dict, self.top_10[i].ans))
+            self.top_10[i].ans = new_ans
+            scores.append(entropy)
+            
 
+        normalized_X = preprocessing.normalize([scores])
+        for i in range(len(self.top_10)):
+            self.top_10[i].entropy_score = normalized_X[0][i]
+            #print("Normanlized ENTROPY: {}".format(normalized_X[0][i]))
+
+    def normalize_relevance(self):
+        rel = []
+        for i in range(len(self.top_10)):
+            rel.append(self.top_10[i].relevance_score)
+
+        normalized_X = preprocessing.normalize([rel])
+        for i in range(len(self.top_10)):
+            self.top_10[i].relevance_score = normalized_X[0][i]
+            #print("Normanlized RELEVANCE: {}".format(normalized_X[0][i]))
+    
+    def normalize_entity(self):
+        entity = []
+        for i in range(len(self.top_10)):
+            x = self.entity.calc_entity(self.top_10[i].tags,self.top_10[i].ans)
+            entity.append(x)
+
+        normalized_X = preprocessing.normalize([entity]) 
+        for i in range(len(self.top_10)):
+            self.top_10[i].entity_score = normalized_X[0][i]
+            #print("Normanlized ENTITY: {}".format(normalized_X[0][i]))
         
-        entropy_min = min(scores)
-        entropy_max = max(scores)
-        entropy_avg = sum(scores)/len(scores)
-        selected_ans = []
-        for i in range(len(scores)):
-            if scores[i] >= entropy_avg:
-                selected_ans.append([self.top_10[i], scores[i]])
-                        # print(selected_ans)
-                if entropy_max - entropy_min != 0:
-                    self.top_10[i].entropy_score = ( scores[i]-entropy_min) / (entropy_max - entropy_min)
-                else:
-                    self.top_10[i].entropy_score = self.entropy_score - entropy_min
-                
 
-            print(self.top_10[i].entropy_score)
+    def normalize_semantic_pattern(self):
+        """
+        docstring
+        """
+        semantic = []
+        for i in range(len(self.top_10)):
+            x = self.pattern.get_semantic_pattern_value(self.top_10[i].ans)
+            self.top_10[i].semantic_pattern = x
+            #print("semantic pattern: {}".format(x))
+            
+        
 
-                # print(selected_ans)
-                # if entropy_max - entropy_min != 0:
-                #     self.entropy_score = (self.entropy_score -
-                #                           entropy_min) / (entropy_max - entropy_min)
-                # else:
-                #     self.entropy_score = self.entropy_score - entropy_min
+    def normalize_format_pattern(self):
+        """
+        docstring
+        """
+        for i in range(len(self.top_10)):
+            x = self.pattern.get_format_pattern_value(self.top_10[i].ans)
+            self.top_10[i].format_pattern = x
+            #print("format pattern: {}".format(x))
+    
+    def normalize_votes(self):
+        """
+        docstring
+        """
+        vot = []
+        for i in range(len(self.top_10)):
+            vot.append(self.top_10[i].score)
 
-        return 0
+        normalized_X = preprocessing.normalize([vot]) 
+        for i in range(len(self.top_10)):
+            self.top_10[i].votes_score = normalized_X[0][i]
+            #print("Normanlized VOTES: {}".format(normalized_X[0][i]))
 
     def main(self, top10Q):
         for i in range(len(top10Q)):
-            self.top_10.append(answer(top10Q[i].ans))
-
-        # a1 = answer("<p>Am I correct in saying that a .Net Hashtable is not synchronized while a Java Hashtable is? And at the same time a Java HashMap is not synchronized and has better performance? </p>\n\n<p>I am rewriting a Java app that makes heavy use of HashMaps in C# and I would like to use a HashTable and ensure that the performance is basically equivalent. </p>\n")
-        # a2 = answer("<p>What are the differences between a <a href=https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/HashMap.html rel=noreferrer><code>HashMap</code></a> and a <a href=https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Hashtable.html rel=noreferrer><code>Hashtable</code></a> in Java?</p>\n\n<p>Which is more efficient for non-threaded applications?</p>\n")
+            a1 = answer(top10Q[i].ans,top10Q[i].tags, top10Q[i].ans_score,top10Q[i].Rel, top10Q[i].ansId) 
+            
+            self.top_10.append(a1)
         
-        # self.top_10 = [a1,a2]
-        self.entropy_score = self.calculate_entropy_val()
-        print(self.entropy_score)
+        #query related features
+        self.normalize_relevance()
+        self.normalize_entity()
+        #user oriented features
+        self.normalize_votes()
+        #paragraph
+        self.calculate_entropy_val()
+        self.normalize_semantic_pattern()
+        self.normalize_format_pattern()
 
+        for i in range(len(self.top_10)):
+            over = self.top_10[i].relevance_score*self.top_10[i].entity_score*self.top_10[i].votes_score*self.top_10[i].entropy_score*self.top_10[i].semantic_pattern*self.top_10[i].format_pattern
+            self.top_10[i].overall_score = over
+            #print("OVERALL SCORE: {}".format(over))
+        
+        self.top_10.sort(key=lambda x: x.overall_score, reverse=True)
+        return self.top_10
 
 if __name__ == "__main__":
 

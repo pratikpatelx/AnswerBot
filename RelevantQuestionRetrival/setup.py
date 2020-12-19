@@ -1,7 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 import xml.etree.ElementTree as ET
-
+import sys
+sys.path.append("../")
 
 # import lxml as etree
 
@@ -59,11 +60,12 @@ def insert_data(conn, fileName, tab):
             val = val + "?, "
 
         val = val + "?"
-        query = insert_query.format(table=tab, columns=', '.join(
-            child.attrib.keys()), values=val)
-
-        curs.execute(query, child.attrib.values())
-
+        query = insert_query.format(table=tab, columns=', '.join(child.attrib.keys()), values=val)
+        vac = []
+        for i in child.attrib.values():
+            vac.append(i)
+        curs.execute(query, vac)
+        count = count +1
         conn.commit()
         # count = count + 1
         # if (count > 500000):
@@ -81,7 +83,7 @@ def insert_data(conn, fileName, tab):
 
 
 def main():
-    database = "TestDB.db"
+    database = "../pythonsqlite.db"
 
     sql_create_posts_table = """
     CREATE TABLE IF NOT EXISTS Posts (Id INTEGER PRIMARY KEY,
@@ -116,12 +118,22 @@ def main():
         CreationDate DATETIME,
         BountyAmount INTEGER
     );"""
+    
+    sql_create_tags_table = """
+    CREATE TABLE IF NOT EXISTS Tags(
+        Id INTEGER,
+        TagName TEXT,
+        Count INTEGER,
+        ExcerptPostId INTEGER,
+        WikiPostId INTEGER
+    );"""
 
     conn = create_connection(database)
 
     if conn is not None:
         create_table(conn, sql_create_posts_table)
         create_table(conn, sql_create_votes_table)
+        create_table(conn, sql_create_tags_table)
 
     else:
         print("..Error creating tables for DB..\n")
@@ -131,8 +143,9 @@ def main():
 
     print("Please wait...... BULK inserting data into Table Votes..\n")
     insert_data(conn, 'Votes.xml', "Votes")
+    print("Please wait...... BULK inserting data into Table Tags..\n")
+    insert_data(conn, 'tags.xml', "Tags")
     print("DONE data insertion.... Closing DB...\n")
-
     close_connection(conn)
 
 

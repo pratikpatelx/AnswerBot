@@ -47,13 +47,11 @@ class EntropyHandler(object):
         test = re.sub(r'\s+', ' ', test)
         result = re.sub(clean, '', test)
         tokens = word_tokenize(test)
-        print(tokens)
         N = len(tokens)
         ps = PorterStemmer()
         word_freq = {}
         count = 0
         words = [word for word in tokens if word.isalpha()]
-        print(words)
         for token in words:
             token = ps.stem(token)
             if token not in word_freq.keys():
@@ -68,9 +66,9 @@ class EntropyHandler(object):
 
     def calculate_entropy(self, idf_dict, ans):
         
-        print("{0:20} {1:20}".format("Word", "IDF VALUE"))
-        for key, value in idf_dict.items():
-            print("{0:20} {1:20}".format(key, value))
+        # print("{0:20} {1:20}".format("Word", "IDF VALUE"))
+        # for key, value in idf_dict.items():
+        #     print("{0:20} {1:20}".format(key, value))
 
         paragraphs = self.split_into_paragraphs(ans)
         paragraphs_entropy = []
@@ -89,13 +87,25 @@ class EntropyHandler(object):
 
             total_entropy = sum(idf_list)
             paragraphs_entropy.append(total_entropy)
-        return total_entropy
+        useful_paragraphs = ""
+        entropy_min = min(paragraphs_entropy)
+        entropy_max = max(paragraphs_entropy)
+        entropy_avg = sum(paragraphs_entropy)/len(paragraphs_entropy)
+        ans_entropy = 0
+        count = 0
+        for i in range(len(paragraphs)):
+            if paragraphs_entropy[i] >= entropy_avg:
+                useful_paragraphs = useful_paragraphs + " " +paragraphs[i]
+                ans_entropy = ans_entropy + paragraphs_entropy[i]
+                count = count +1
+
+        return useful_paragraphs, (ans_entropy/count)
 
     def read_entropy_voc(self):
         the_file = open(path)
         idf_voc = {}
         for line in the_file:
-            word_idf = line.split('     ')
+            word_idf = line.split(' ')
             word = word_idf[0]
             idf = float(word_idf[1].strip())
             idf_voc[word] = idf

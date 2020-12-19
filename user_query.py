@@ -32,6 +32,9 @@ class Q_data:
         self.Rel = rele
         self.Id = id
         self.ans = ""
+        self.tags = ""
+        self.ans_score = 0
+        self.ansId = 0
 
 
 class AnswerBot:
@@ -67,26 +70,35 @@ class AnswerBot:
         for i in range(len(tokens) - 1):
             db_query = db_query + ("Title like '%{}%' and ".format(tokens[i]))
 
-        db_query = db_query + \
-            ("Title like '%{}%'".format(tokens[len(tokens)-1]))
+        db_query = db_query + ("Title like '%{}%'".format(tokens[len(tokens)-1]))
 
         temp_cursor.execute(db_query)
         result = temp_cursor.fetchall()
+        print(len(result))
         for x in result:
             if x not in post_ids:
                 post_ids.append(x)
+        # temp_cursor2 = self.db_conn.cursor()
 
         if len(post_ids) <= 3:
+            tags = []
             tokens = test_question.split(' ')
-            db_query = ("SELECT Id, Title FROM Posts where ")
-            for i in range(len(tokens) - 1):
+            db_query = ("SELECT DISTINCT Id, Title FROM Posts where ")
+            for i in range(len(tokens)):
                 if tokens[i] not in stopWords:
-                    db_query = db_query + \
-                        ("Title like '%{}%' or ".format(tokens[i]))
-
-            if tokens[len(tokens)-1] not in stopWords:
-                db_query = db_query + \
-                    ("Title like '%{}%'".format(tokens[len(tokens)-1]))
+                    temp_query = 'SELECT Id FROM Tags where TagName like "%{}%";'.format(
+                        str(tokens[i]))
+                    temp_cursor.execute(temp_query)
+                    result = temp_cursor.fetchall()
+                    if len(result) > 0 and len(result) < 200:
+                        if tokens[i] not in tags:
+                            tags.append(tokens[i])
+                
+            for i in range(len(tags)):
+                if i < len(tags)-1:
+                    db_query = db_query + "Title like '%{}%' and ".format(tags[i])
+                else:
+                    db_query = db_query + "Title like '%{}%'".format(tags[len(tags)-1]) 
 
             temp_cursor.execute(db_query)
             result = temp_cursor.fetchall()
@@ -94,6 +106,20 @@ class AnswerBot:
             for x in result:
                 if x not in post_ids:
                     post_ids.append(x)
+            if(len(result) <= 3):
+                db_query = ("SELECT DISTINCT Id, Title FROM Posts where ")
+                for i in range(len(tags)):
+                    if i < len(tags)-1:
+                        db_query = db_query + "Title like '%{}%' or ".format(tags[i])
+                    else:
+                        db_query = db_query + "Title like '%{}%'".format(tags[len(tags)-1])
+                
+                temp_cursor.execute(db_query)
+                result = temp_cursor.fetchall()
+                print(len(result))
+                for x in result:
+                    if x not in post_ids:
+                        post_ids.append(x)
         print("---------end---------")
         print("Similar Question Count : {}".format(len(post_ids)))
 
@@ -140,27 +166,34 @@ class AnswerBot:
             top_10 = []
             ans_cursor = self.db_conn.cursor()
             for i in range(len(answers)):
-                if i <= 1:
-                    db_query = 'SELECT AcceptedAnswerId FROM posts Where Id = {}'.format(
+                if i <= 10:
+                    db_query = 'SELECT AcceptedAnswerId, tags FROM posts Where Id = {}'.format(
                         answers[i].Id)
                     ans_cursor.execute(db_query)
                     result = ans_cursor.fetchall()
-                    print(result[0][0])
-                    print("--------===========--------------------==============----------")
-                    db_query = 'SELECT Body FROM posts Where Id = {}'.format(
-                        result[0][0])
-                    ans_cursor.execute(db_query)
-                    result = ans_cursor.fetchall()
-                    print(result[0][0])
-                    print("*******************************************************************")
-                    answers[i].ans = result[0][0]
-                    top_10.append(answers[i])
+                    answers[i].tags = result[0][1]
+                    answers[i].ansId = result[0][0]
+                    # print("--------===========--------------------==============----------")
+                    if result[0][0] != None:
+                        db_query = 'SELECT Body, Score FROM posts Where Id = {}'.format(
+                            result[0][0])
+                        ans_cursor.execute(db_query)
+                        result = ans_cursor.fetchall()
+                        answers[i].ans = result[0][0]
+                        answers[i].ans_score = result[0][1]
+                        
+                        top_10.append(answers[i])
                     #print("Relevance: [{:.3f}] Q: {}".format(answers[i].Rel, answers[i].Q))
+                    else:
+                        #print("***********************---DELETE---**************************")
+                        del answers[i]
                 else:
                     break
             
             feature_scores = Normalize.Normalize()
-            feature_scores.main(top_10)
+            sorted_ans = feature_scores.main(top_10)
+            for i in range(len(sorted_ans)):
+                print("AnsId: {}, score: {}".format(sorted_ans[i].ansId,sorted_ans[i].overall_score))
 
             end_time = time.time() - st_time
             print("\nTook {:.2f} seconds for Query: \"{}\"".format(
@@ -198,7 +231,8 @@ stopWords = []
 relAlgo = rel.RCA()
 if __name__ == "__main__":
     retrieveStopWords("./Word2VecModel/stopWords.txt")
-    testQuestions = ["What does the yield keyword do?"]
+    testQuestions = ["Difference between hashtable and hashmap"]
+    # "How do I compare strings in Java?", "Why is processing a sorted array faster than processing an unsorted array?"
     testMode = True
     begin = AnswerBot("pythonsqlite.db", testQuestions, testMode)
     begin.main()
