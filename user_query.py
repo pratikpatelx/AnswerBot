@@ -10,7 +10,6 @@ import UsefulAnswerParagraphsSelection.normalization as Normalize
 import nltk
 import re
 
-
 def create_connection(db_file):
     """ create a database connection to the SQLite database
         specified by db_file
@@ -74,11 +73,10 @@ class AnswerBot:
 
         temp_cursor.execute(db_query)
         result = temp_cursor.fetchall()
-        print(len(result))
+        #print(len(result))
         for x in result:
             if x not in post_ids:
                 post_ids.append(x)
-        # temp_cursor2 = self.db_conn.cursor()
 
         if len(post_ids) <= 3:
             tags = []
@@ -102,7 +100,7 @@ class AnswerBot:
 
             temp_cursor.execute(db_query)
             result = temp_cursor.fetchall()
-            print(len(result))
+            #print(len(result))
             for x in result:
                 if x not in post_ids:
                     post_ids.append(x)
@@ -116,7 +114,7 @@ class AnswerBot:
                 
                 temp_cursor.execute(db_query)
                 result = temp_cursor.fetchall()
-                print(len(result))
+                #print(len(result))
                 for x in result:
                     if x not in post_ids:
                         post_ids.append(x)
@@ -126,6 +124,11 @@ class AnswerBot:
         return post_ids
 
     def main(self):
+        """"
+        main: This method will run the Query dynamically based on what the user types. 
+        Then it will calculate the overall score to get the correct N number of answer
+        paragraphs. The score is going to be normalized from normalization.py
+        """"
         print("\nHello! I am AnswerBot. Ask me a technical question! Press <Enter> without a question to exit")
         count = 0
         while True:
@@ -196,8 +199,7 @@ class AnswerBot:
                 print("AnsId: {}, score: {}".format(sorted_ans[i].ansId,sorted_ans[i].overall_score))
 
             end_time = time.time() - st_time
-            print("\nTook {:.2f} seconds for Query: \"{}\"".format(
-                end_time, query))
+            print("\nTook {:.2f} seconds for Query: \"{}\"".format(end_time, query))
 
         self.db_conn.close()
 

@@ -67,14 +67,6 @@ def insert_data(conn, fileName, tab):
         curs.execute(query, vac)
         count = count +1
         conn.commit()
-        # count = count + 1
-        # if (count > 500000):
-        #     print(count)
-        #     count = 0
-
-        # if(count > 10000):
-        #     break
-
     print("\n --------------------------------------------------------------------------------------------")
     print("Done Inserting into", tab, "Count: ", count)
     print("\n --------------------------------------------------------------------------------------------\n\n")
@@ -131,8 +123,8 @@ def main():
     conn = create_connection(database)
 
     if conn is not None:
-        create_table(conn, sql_create_posts_table)
-        create_table(conn, sql_create_votes_table)
+        # create_table(conn, sql_create_posts_table)
+        # create_table(conn, sql_create_votes_table)
         create_table(conn, sql_create_tags_table)
 
     else:
