@@ -7,6 +7,7 @@ import sqlite3
 import time
 import RelevantQuestionRetrival.RCA as rel
 import UsefulAnswerParagraphsSelection.normalization as Normalize
+import DiverseAnswerSummaryGeneration.MMR as MMR
 import nltk
 import re
 
@@ -124,11 +125,11 @@ class AnswerBot:
         return post_ids
 
     def main(self):
-        """"
+        """
         main: This method will run the Query dynamically based on what the user types. 
         Then it will calculate the overall score to get the correct N number of answer
         paragraphs. The score is going to be normalized from normalization.py
-        """"
+        """
         print("\nHello! I am AnswerBot. Ask me a technical question! Press <Enter> without a question to exit")
         count = 0
         while True:
@@ -165,7 +166,10 @@ class AnswerBot:
                 answers.append(Q_data(Q[1], temp_rel, Q[0]))
                 #print("Relevance: [{}] Q: [{}]".format(temp_rel, Q[1]))
 
-            answers.sort(key=lambda x: x.Rel, reverse=True)
+
+            # collect top 10 answers
+            # answers.sort(key=lambda x: x.Rel, reverse=True)
+            answers = sorted(answers, key=lambda x: x.Rel, reverse=True)
             top_10 = []
             ans_cursor = self.db_conn.cursor()
             for i in range(len(answers)):
@@ -193,16 +197,53 @@ class AnswerBot:
                 else:
                     break
             
+            # create pool of paragraphs from all top 10 paragraphs
+            answer_para = []
+            for i in range(len(top_10)):
+                result = self.split_into_paragraphs(top_10[i].ans)
+                for j in range(len(result)):
+                    a1 = Q_data(top_10[i].Q,top_10[i].Rel, top_10[i].Id)
+                    a1.ans = result[j]
+                    a1.tags = top_10[i].tags
+                    a1.ans_score = top_10[i].ans_score
+                    a1.ansId = top_10[i].ansId
+                    answer_para.append(a1)
+
+            
+            print(len(answer_para))
+
             feature_scores = Normalize.Normalize()
-            sorted_ans = feature_scores.main(top_10)
-            for i in range(len(sorted_ans)):
-                print("AnsId: {}, score: {}".format(sorted_ans[i].ansId,sorted_ans[i].overall_score))
+            print("--------------------------------------------------------------------\n---------------------\n")
+            sorted_ans = feature_scores.main(answer_para, relAlgo.idf_dict, stopWords)
+            print(len(sorted_ans))
+            MMRHandler = MMR.MMRHandler()
+            MMRHandler.build_sim_matrix(sorted_ans, relAlgo)
+            print("--------------------------------------------------------------------\n---------------------\n")
+            # print(len(sorted_ans))
+            # for i in range(len(sorted_ans)):
+            #     print("A:{} SC:{} -> {}".format(i, sorted_ans[i].overall_score, sorted_ans[i].ans))
+            #     # result = MMRHandler.build_sim_matrix(sorted_ans[i].ans, relAlgo)
+            #     if i > 5:
+            #         break  
+            #     #print(result)
 
             end_time = time.time() - st_time
-            print("\nTook {:.2f} seconds for Query: \"{}\"".format(end_time, query))
+            print("\nTook {:.2f} seconds for Query: \"{}\"".format(
+                    end_time, query))
 
         self.db_conn.close()
 
+    def split_into_paragraphs(self, data):
+        data = data.split("<p>")
+        para = []
+        for i in range(len(data)):
+            if data[i] != '':
+                temp = data[i].split("</p>")
+                for j in range(len(temp)):
+                    if temp[j].strip() != '':
+                        para.append(temp[j]) 
+        return para
+    
     def preprocess(self, item):
         """
         preprocess: This method preprocess the text i.e removed unwanted tags, spaces etc
@@ -234,6 +275,7 @@ relAlgo = rel.RCA()
 if __name__ == "__main__":
     retrieveStopWords("./Word2VecModel/stopWords.txt")
     testQuestions = ["Difference between hashtable and hashmap"]
+    # testQuestions = ["Differe"]
     # "How do I compare strings in Java?", "Why is processing a sorted array faster than processing an unsorted array?"
     testMode = True
     begin = AnswerBot("pythonsqlite.db", testQuestions, testMode)

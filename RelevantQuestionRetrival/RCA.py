@@ -19,7 +19,7 @@ class RCA:
         @return: the IDF vocabulary of metrics
         """
         idf_metric_dict = {}
-        with open("../IDFVocabulary/IDF_Test.csv", encoding="utf8") as csvfile:
+        with open("./IDFVocabulary/IDF_Test.csv", encoding="utf8") as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             print("Loading IDF metrics....")
             for row in readCSV:
@@ -35,7 +35,7 @@ class RCA:
         @return: the Model 
         """
         print("Loading Word2Vector Model.\n Please wait....")
-        model = Word2Vec.load("../Word2VecModel/MainWord2vec.model")
+        model = Word2Vec.load("./Word2VecModel/MainWord2vec.model")
         print("Loaded model details : {}".format(model))
         return model
 

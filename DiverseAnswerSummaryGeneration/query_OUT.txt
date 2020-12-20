@@ -1,0 +1,304 @@
+[26, 1, 6, 28, 21, 8, 15, 19, 17, 20, 2, 27, 4, 5, 11, 12, 9, 14, 0, 16, 24, 13, 3, 10, 18, 7, 22, 23, 25]
+A:0 -> The following samples show the same Key-Value pair instances created for different scenarios - sequential access (two examples) followed by one example of random access. For simplicity in these examples they will all use an int key with string value - you can substitute in the data types you need to use.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:1 -> There are several differences between <a href="http://java.sun.com/javase/7/docs/api/java/util/HashMap.html" rel="noreferrer"><code>HashMap</code></a> and <a href="http://java.sun.com/javase/7/docs/api/java/util/Hashtable.html" rel="noreferrer"><code>Hashtable</code></a> in Java:
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:2 -> This isn't a blind rule, but in general, <em>coding to the most general interface</em> is going to be less brittle than coding to something more specific. If I'd remembered that, I wouldn't have created a <code>Foo</code> that set Mary up for failure with <code>SpecialFoo</code>. If <em>Mary</em> had remembered that, then even though I messed up <code>Foo</code>, she would have declared her private method with <code>Map</code> instead of <code>HashMap</code> and my changing <code>Foo</code>'s contract wouldn't have impacted her code.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:3 -> I think what you're asking is if HashMaps in Java and HashTables in C# act in roughly the same way and you're largely correct from a performance point of view. HashMaps as I recall do not complain if you insert duplicate keys whereas HashTable in C# will.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:4 -> 
+
+<pre><code>// --- Make a Dictionary (strongly typed) of 3 Key-Value pairs (randomly accessed) ---
+// build it ...
+Dictionary&lt;int, string&gt; dict = new Dictionary&lt;int, string&gt;();
+dict[1] = "one";
+dict[2] = "two";
+// access first element - by key...
+Console.Write("key:1 value:" + dict[1]); // returns a string for key 1
+</code></pre>
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:5 -> 
+
+<pre><code>class Foo {
+    private HashMap&lt;String, Object&gt; things;
+    private HashMap&lt;String, Object&gt; moreThings;
+
+    protected HashMap&lt;String, Object&gt; getThings() {
+        return this.things;
+    }
+
+    protected HashMap&lt;String, Object&gt; getMoreThings() {
+        return this.moreThings;
+    }
+
+    public Foo() {
+        this.things = new HashMap&lt;String, Object&gt;();
+        this.moreThings = new HashMap&lt;String, Object&gt;();
+    }
+
+    // ...more...
+}
+</code></pre>
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:6 -> 
+
+<pre><code>class SpecialFoo extends Foo {
+    private void doSomething(Map&lt;String, Object&gt; t) { // &lt;== Changed
+        // ...
+    }
+
+    public void whatever() {
+        this.doSomething(this.getThings());
+        this.doSomething(this.getMoreThings());
+    }
+}
+</code></pre>
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:7 -> 
+
+<pre><code>// --- Make a list of 3 Key-Value pairs (sequentially accessed) ---
+// build it...
+List&lt;KeyValuePair&lt;int, string&gt;&gt; listKVP = new List&lt;KeyValuePair&lt;int, string&gt;&gt;();
+listKVP.Add(new KeyValuePair&lt;int, string&gt;(1, "one"));
+listKVP.Add(new KeyValuePair&lt;int, string&gt;(2, "two"));
+// access first element - by position...
+Console.Write( "key:" + listKVP[0].Key + "value:" + listKVP[0].Value );
+</code></pre>
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:8 -> <a href="http://msdn.microsoft.com/en-us/library/system.collections.hashtable(VS.80).aspx" rel="noreferrer">Hashtable</a> is random access and internally uses <a href="http://msdn.microsoft.com/en-us/library/system.collections.dictionaryentry(VS.71).aspx" rel="noreferrer">System.Collections.DictionaryEntry</a> for its items from .NET 1.1; whereas a strongly typed <a href="http://msdn.microsoft.com/en-us/library/xfhwa508(VS.80).aspx" rel="noreferrer">System.Collections.Generic.Dictionary</a> in .NET 2.0 uses <a href="http://msdn.microsoft.com/en-us/library/5tbh8a42(VS.80).aspx" rel="noreferrer">System.Collections.Generic.<strong>KeyValuePair</strong></a> items and is also random access.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:9 -> 
+
+<pre><code>// --- Make an array of 3 Key-Value pairs (sequentially accessed) ---
+// build it...
+KeyValuePair&lt;int, string&gt;[] arrKVP = new KeyValuePair&lt;int, string&gt;[3];
+arrKVP[0] = new KeyValuePair&lt;int, string&gt;(1, "one");
+arrKVP[1] = new KeyValuePair&lt;int, string&gt;(2, "two");
+// access first element - by position...
+Console.Write("key:" + arrKVP[0].Key + "value:" + arrKVP[0].Value);
+</code></pre>
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:10 -> <code>Hashtable</code> is <a href="https://stackoverflow.com/questions/1085709/what-does-synchronized-mean">synchronized</a>, whereas <code>HashMap</code> is not. This makes <code>HashMap</code> better for non-threaded applications, as unsynchronized Objects typically perform better than synchronized ones.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:11 -> It appears that the HttpResponse.TransmitFile that is used in FilePathResult has or have had a few problems. It might depend on the version of Windows you are running your server according to this <a href="http://support.microsoft.com/kb/902780" rel="noreferrer">hotfix</a>. If you search on Google for something like 'response.TransmitFile error' you get a lot of errors. 
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:12 -> <a href="http://java.sun.com/javase/6/docs/api/java/util/TreeMap.html" rel="noreferrer"><code>TreeMap</code></a> is an example of a <a href="http://java.sun.com/javase/6/docs/api/java/util/SortedMap.html" rel="noreferrer"><code>SortedMap</code></a>, which means that the order of the keys can be sorted, and when iterating over the keys, you can expect that they will be in order.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:13 -> 
+
+<pre><code>class Foo {
+    private Map&lt;String, Object&gt; things;             // &lt;== Changed
+    private Map&lt;String, Object&gt; moreThings;         // &lt;== Changed
+
+    protected Map&lt;String, Object&gt; getThings() {     // &lt;== Changed
+        return this.things;
+    }
+
+    protected Map&lt;String, Object&gt; getMoreThings() { // &lt;== Changed
+        return this.moreThings;
+    }
+
+    public Foo() {
+        this.things = new HashMap&lt;String, Object&gt;();
+        this.moreThings = new HashMap&lt;String, Object&gt;();
+    }
+
+    // ...more...
+}
+</code></pre>
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:14 -> There is no difference between the objects; you have a <code>HashMap&lt;String, Object&gt;</code> in both cases. There is a difference in the <em>interface</em> you have to the object. In the first case, the interface is <code>HashMap&lt;String, Object&gt;</code>, whereas in the second it's <code>Map&lt;String, Object&gt;</code>. But the underlying object is the same.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:15 -> The advantage to using <code>Map&lt;String, Object&gt;</code> is that you can change the underlying object to be a different kind of map without breaking your contract with any code that's using it. If you declare it as <code>HashMap&lt;String, Object&gt;</code>, you have to change your contract if you want to change the underlying implementation.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:16 -> Unless I had a really good reason for sharing that my implementation was using a <code>HashMap</code> (and that does happen), what I should have done was declare <code>getThings</code> and <code>getMoreThings</code> as just returning <code>Map&lt;String, Object&gt;</code> without being any more specific than that. In fact, barring a good reason to do something else, even within <code>Foo</code> I should probably declare <code>things</code> and <code>moreThings</code> as <code>Map</code>, not <code>HashMap</code>/<code>TreeMap</code>:
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:17 -> A subtle but important difference is that <code>Hashtable</code> supports multiple reader threads with a single writer thread, while <code>Dictionary</code> offers no thread safety. If you need thread safety with a generic dictionary, you must implement your own synchronization or (in .NET 4.0) use <code>ConcurrentDictionary&lt;TKey, TValue&gt;</code>.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:18 -> One of HashMap's subclasses is <a href="http://java.sun.com/javase/7/docs/api/java/util/LinkedHashMap.html" rel="noreferrer"><code>LinkedHashMap</code></a>, so in the event that you'd want predictable iteration order (which is insertion order by default), you could easily swap out the <code>HashMap</code> for a <code>LinkedHashMap</code>.  This wouldn't be as easy if you were using <code>Hashtable</code>.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:19 -> In terms of Java, both the class <code>HashMap</code> and the class <code>Dictionary</code> are <em>implementations</em> of the "Map" abstract data type.  Abstract data types are not specific to any one programming language, and the Map ADT can also be known as a Hash, or a Dictionary, or an Associative Array (others at <a href="http://en.wikipedia.org/wiki/Associative_array" rel="noreferrer">http://en.wikipedia.org/wiki/Associative_array</a>).  (Notice we're making a distinction between the <code>Dictionary</code> class and the Dictionary ADT.)
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:20 -> <em>Microsoft's hybrid solution</em>: 
+An interesting specialized collection introduced in .NET 1.1 is <a href="http://msdn.microsoft.com/en-us/library/system.collections.specialized.hybriddictionary(VS.71).aspx" rel="noreferrer">System.Collections.Specialized.HybridDictionary</a> which uses a ListDictionary internal representation (sequentially accessed) while the collection is small, and then automatically switches to a Hashtable internal representation (randomly accessed) when the collection gets large".
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:21 -> Interfaces (and base classes) let us reveal <em>only as much as is necessary</em>, keeping our flexibility under the covers to make changes as appropriate. In general, we want to have our references be as basic as possible. If we don't need to know it's a <code>HashMap</code>, just call it a <code>Map</code>.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:22 -> Since synchronization is not an issue for you, I'd recommend <code>HashMap</code>. If synchronization becomes an issue, you may also look at <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ConcurrentHashMap.html" rel="noreferrer"><code>ConcurrentHashMap</code></a>.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:23 -> <a href="http://java.sun.com/javase/6/docs/api/java/util/HashMap.html" rel="noreferrer"><code>HashMap</code></a> on the other hand, makes no such guarantee.  Therefore, when iterating over the keys of a <code>HashMap</code>, you can't be sure what order they will be in.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:24 -> Because <strong>KeyValuePair</strong> is an independent class, you can manually make a List or Array of KeyValuePair instances, but a list or array will be sequentially accessed. This is in contrast to the Hashtable or Dictionary which internally creates its own element instances and is randomly accessed. Both are valid ways of using KeyValuePair instances. Also see <a href="http://msdn.microsoft.com/en-us/library/6tc79sx1(VS.80).aspx" rel="noreferrer">see MSDN info about selecting a Collection class to use</a>.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:25 -> Later, I decide that actually, it's better if I use <code>TreeMap</code> instead of <code>HashMap</code> in <code>Foo</code>. I update <code>Foo</code>, changing <code>HashMap</code> to <code>TreeMap</code>. Now, <code>SpecialFoo</code> doesn't compile anymore, because I've broken the contract: <code>Foo</code> used to say it provided <code>HashMap</code>s, but now it's providing <code>TreeMaps</code> instead. So we have to fix <code>SpecialFoo</code> now (and this kind of thing can ripple through a codebase).
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:26 -> A Map on the other hand takes one object and uses that as a key (index) to another object (the value).  So lets say you have objects which have unique IDs, and you know you are going to want to access these objects by ID at some point, the Map will make this very easy on you (and quicker/more efficient).  The HashMap implementation uses the hash value of the key object to locate where it is stored, so there is no guarentee of the order of the values anymore.  There are however other classes in the Java API that can provide this, e.g. LinkedHashMap, which as well as using a hash table to store the key/value pairs, also maintains a List (LinkedList) of the keys in the order they were added, so you can always access the items again in the order they were added (if needed).
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:27 -> So as other answers have discussed, the list interface (ArrayList) is an ordered collection of objects that you access using an index, much like an array (well in the case of ArrayList, as the name suggests, it is just an array in the background, but a lot of the details of dealing with the array are handled for you).  You would use an ArrayList when you want to keep things in sorted order (the order they are added, or indeed the position within the list that you specify when you add the object).
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+A:28 -> You are asking specifically about ArrayList and HashMap, but I think to fully understand what is going on you have to understand the Collections framework.  So an ArrayList implements the List interface and a HashMap implements the Map interface.  So the real question is when do you want to use a List and when do you want to use a Map.  This is where the Java API documentation helps a lot.
+
+--------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------
+---------------------
+
+
+Took 2521.09 seconds for Query: "Difference between hashtable and hashmap"
+
+Question: 

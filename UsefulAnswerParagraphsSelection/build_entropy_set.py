@@ -64,42 +64,37 @@ class EntropyHandler(object):
     
         return word_freq
 
-    def calculate_entropy(self, idf_dict, ans):
+    def calculate_entropy(self,stopWords, idf_dict, ans):
         
         # print("{0:20} {1:20}".format("Word", "IDF VALUE"))
         # for key, value in idf_dict.items():
         #     print("{0:20} {1:20}".format(key, value))
 
-        paragraphs = self.split_into_paragraphs(ans)
-        paragraphs_entropy = []
-        for i in range(len(paragraphs)):
-            idf_list = []
-            ans_list = word_tokenize(paragraphs[i])
-            #tokenize answer
-            total_entropy = 0
-            for val in ans_list:
+        test = ans.lower()
+        clean = re.compile(r'<[^>]+>')
+        test = re.sub(r'\W', ' ', test)
+        test = re.sub(r'\s+', ' ', test)
+        result = re.sub(clean, '', test)
+        tokens = word_tokenize(test)
+        N = len(tokens)
+        ps = PorterStemmer()
+        word_freq = {}
+        count = 0
+        words = [word for word in tokens if word.isalpha()]
+        idf_list = []
+        for token in words:
+            # token = ps.stem(token)
+            if token not in stopWords:
                 try:
-                    idf_val = idf_dict[val]
-                except:
+                    idf_val = float(idf_dict[token])
+                except Exception as e:
+                    #print(e)
                     idf_val = 0
 
                 idf_list.append(idf_val)
 
-            total_entropy = sum(idf_list)
-            paragraphs_entropy.append(total_entropy)
-        useful_paragraphs = ""
-        entropy_min = min(paragraphs_entropy)
-        entropy_max = max(paragraphs_entropy)
-        entropy_avg = sum(paragraphs_entropy)/len(paragraphs_entropy)
-        ans_entropy = 0
-        count = 0
-        for i in range(len(paragraphs)):
-            if paragraphs_entropy[i] >= entropy_avg:
-                useful_paragraphs = useful_paragraphs + " " +paragraphs[i]
-                ans_entropy = ans_entropy + paragraphs_entropy[i]
-                count = count +1
-
-        return useful_paragraphs, (ans_entropy/count)
+        total_entropy = sum(idf_list)
+        return total_entropy
 
     def read_entropy_voc(self):
         the_file = open(path)

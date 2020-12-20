@@ -18,6 +18,7 @@ class PatternHandler(object):
         for pattern in Patterns:
             if pattern in ans_text.lower():
                 pattern_value = 1
+                break
         return pattern_value
 
     def get_format_pattern_value(self, ans_text):
@@ -28,16 +29,13 @@ class PatternHandler(object):
         """
         html_value = 0.0001
 
-        HTML_Tag_bold = ['<strong>', '<code>']
-        HTML_Tag_strike = ['<strike>']
+        HTML_Tag_bold = ['<strong>', '<code>','<strike>']
 
         for tag in HTML_Tag_bold:
             if tag in ans_text.lower():
                 html_value = 1
-        for tag in HTML_Tag_strike:
-            if tag in ans_text.lower():
-                html_value = 1
-
+                break
+    
         return html_value
 
 if __name__ == "__main__":
